@@ -40,9 +40,20 @@ func New() *tempest {
 }
 
 // WithConfig sets the configuration for the tempest instance.
-func (tempest *tempest) WithConfig(conf *Config) *tempest {
-	tempest.conf = conf
-	return tempest
+func WithConfig(conf *Config) *tempest {
+	if conf.Ext == "" {
+		conf.Ext = ".html"
+	}
+	if conf.IncludesDir == "" {
+		conf.IncludesDir = "includes"
+	}
+	if conf.Layout == "" {
+		conf.Layout = "layout"
+	}
+	return &tempest{
+		temps: make(map[string]*template.Template),
+		conf:  conf,
+	}
 }
 
 // LoadFS loads templates from an embedded filesystem and returns a map of

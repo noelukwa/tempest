@@ -1,7 +1,6 @@
 package tempest_test
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -10,15 +9,11 @@ import (
 )
 
 func TestLoadFs(t *testing.T) {
-	tempest := tempest.New()
+	tempst := tempest.New()
 
-	temps, err := tempest.LoadFS(test.Files)
+	temps, err := tempst.LoadFS(test.Files)
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	for name, temp := range temps {
-		fmt.Printf("name: %s - temp: %s\n", name, temp.Name())
 	}
 
 	if len(temps) != 3 {
@@ -70,4 +65,33 @@ func TestLoadFs(t *testing.T) {
 			t.Errorf("expected : %s got : %s", "main-header admin-layout admin-dash main-footer", content.String())
 		}
 	}
+}
+
+func TestLoadWithConfig(t *testing.T) {
+	tempest := tempest.WithConfig(&tempest.Config{
+		Layout:      "base",
+		IncludesDir: "partials",
+	})
+	temps, err := tempest.LoadFS(test.SpecialFiles)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, ok := temps["home"]; !ok {
+		t.Error("expected home template to be loaded")
+	}
+
+	{
+		// Test index template
+		tmpl := temps["home"]
+
+		// initialise content to be type strings Builder and load content of temp into it, then compare
+		content := strings.Builder{}
+		tmpl.Execute(&content, nil)
+
+		if content.String() != "header home-page footer" {
+			t.Errorf("expected : %s got : %s", "header home-page footer", content.String())
+		}
+	}
+
 }
