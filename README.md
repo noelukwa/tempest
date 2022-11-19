@@ -1,5 +1,5 @@
 ## tempest 
-*Made out of neccessity and frustration * 😩
+*Made out of neccessity and frustration* 😩
 
 ### Lets you
 - Use go templates in your app without repeating the parsing logic over and over.
