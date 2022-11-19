@@ -63,6 +63,17 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
+
+    // Render a template
+
+    mux := http.NewServeMux()
+
+    mux.HandleFunc("/admin", func(w http.ResponseWriter, r *http.Request) {
+        // 🚨 Note that the template name is the file name without the extension
+        // and the base folder ; in this case "templates"
+        dash := templs["admin/dash"]
+        dash.Execute(w, nil)
+    })
 }
 ```
 
