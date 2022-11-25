@@ -123,6 +123,3 @@ The template files in the `templates` directory above will be grouped as follows
 
 Further Read: [Go html/template package](https://pkg.go.dev/html/template)
 
-
-LISENCE: MIT
-
