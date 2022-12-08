@@ -1,3 +1,59 @@
+// Copyright (c) 2022 Noel Ukwa. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be found
+// in the LICENSE file.
+
+// Package tempest is a simple template grouping helper for GO.
+//
+// It is intended to be used in conjuction with go html/template package,
+// and not a replacement for the html/template package.
+//
+// A simple example:
+//
+// 	package main
+//
+// 	import (
+// 		"fmt"
+// 		"html/template"
+// 		"log"
+// 		"net/http"
+// 		"os"
+//
+// 		"github.com/noelukwa/tempest"
+// 	)
+//
+// 	//go:embed views
+// 	var views embed.FS
+//
+// 	func main() {
+// 		t := tempest.New()
+//
+// 		templates, err := t.LoadFS(os.DirFS("views"))
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+//
+// 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+// 			err := templates["index"].Execute(w, nil)
+// 			if err != nil {
+// 				log.Fatal(err)
+// 			}
+// 		})
+//
+// 		http.HandleFunc("/admin", func(w http.ResponseWriter, r *http.Request) {
+// 			err := templates["admin/index"].Execute(w, nil)
+// 			if err != nil {
+// 				log.Fatal(err)
+// 			}
+// 		})
+//
+// 		fmt.Println("Listening on port 8080")
+// 		log.Fatal(http.ListenAndServe(":8080", nil))
+// 	}
+//
+// The above example will load all the templates in the views directory and
+// subdirectories, and will group them into a map of templates to filenames.
+//
+
 package tempest
 
 import (
@@ -9,6 +65,11 @@ import (
 	"strings"
 )
 
+// Config is the configuration for the tempest instance.
+// It is used to set the file extension, the directory where the includes are
+// stored, and the name used for layout templates.
+// Defaults are set for each of these fields if tempest is initialized
+// without a config.
 type Config struct {
 	// The file extension of the templates.
 	// Defaults to ".html".
@@ -28,6 +89,7 @@ type tempest struct {
 	conf  *Config
 }
 
+// New returns a new tempest instance with default configuration.
 func New() *tempest {
 	return &tempest{
 		temps: make(map[string]*template.Template),

@@ -1,13 +1,13 @@
-## tempest 
+# tempest 
 *Made out of neccessity and frustration* 😩
 
-### Lets you
+## Features
 - Use go templates in your app without repeating the parsing logic over and over.
 - Use any template supported by go html/template package.
 - Use `go:embed` to embed template files in your binary.
 - Parse templates once.
 
-### How
+## Usage
 In order for tempest to parse templates, three conditions must be met.
 1. Templates must be embeded 
 2. The name of the template used for layouts should be `layouts.<extention>`, otherwise, it should be stated with custom config.
@@ -22,7 +22,7 @@ In order for tempest to parse templates, three conditions must be met.
 - Go version >= 1.16
 
 
-### Example
+## Example
 Lets say you have a folder structure like this
 ```
 .
@@ -77,7 +77,7 @@ func main() {
 }
 ```
 
-### Template Directory Parsing
+## Template Directory Parsing
 The template files in the `templates` directory above will be grouped as follows
 
 ```
