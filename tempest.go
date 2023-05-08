@@ -84,14 +84,14 @@ type Config struct {
 	Layout string
 }
 
-type tempest struct {
+type Tempest struct {
 	temps map[string]*template.Template
 	conf  *Config
 }
 
 // New returns a new tempest instance with default configuration.
-func New() *tempest {
-	return &tempest{
+func New() *Tempest {
+	return &Tempest{
 		temps: make(map[string]*template.Template),
 		conf: &Config{
 			Ext:         ".html",
@@ -102,7 +102,7 @@ func New() *tempest {
 }
 
 // WithConfig sets the configuration for the tempest instance.
-func WithConfig(conf *Config) *tempest {
+func WithConfig(conf *Config) *Tempest {
 	if conf.Ext == "" {
 		conf.Ext = ".html"
 	}
@@ -112,7 +112,7 @@ func WithConfig(conf *Config) *tempest {
 	if conf.Layout == "" {
 		conf.Layout = "layout"
 	}
-	return &tempest{
+	return &Tempest{
 		temps: make(map[string]*template.Template),
 		conf:  conf,
 	}
@@ -120,7 +120,7 @@ func WithConfig(conf *Config) *tempest {
 
 // LoadFS loads templates from an embedded filesystem and returns a map of
 // templates to filenames.
-func (tempest *tempest) LoadFS(files fs.FS) (map[string]*template.Template, error) {
+func (tempest *Tempest) LoadFS(files fs.FS) (map[string]*template.Template, error) {
 
 	includesDir := filepath.Clean(tempest.conf.IncludesDir)
 	layoutFile := filepath.Clean(tempest.conf.Layout + tempest.conf.Ext)
