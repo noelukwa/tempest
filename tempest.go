@@ -80,18 +80,18 @@ type Config struct {
 	IncludesDir string
 
 	// The name used for layout templates :- templates that wrap other contents.
-	// Defaults to "layouts".
+	// Defaults to "layout.html".
 	Layout string
 }
 
-type Tempest struct {
+type tempest struct {
 	temps map[string]*template.Template
 	conf  *Config
 }
 
 // New returns a new tempest instance with default configuration.
-func New() *Tempest {
-	return &Tempest{
+func New() *tempest {
+	return &tempest{
 		temps: make(map[string]*template.Template),
 		conf: &Config{
 			Ext:         ".html",
@@ -102,7 +102,7 @@ func New() *Tempest {
 }
 
 // WithConfig sets the configuration for the tempest instance.
-func WithConfig(conf *Config) *Tempest {
+func WithConfig(conf *Config) *tempest {
 	if conf.Ext == "" {
 		conf.Ext = ".html"
 	}
@@ -112,7 +112,7 @@ func WithConfig(conf *Config) *Tempest {
 	if conf.Layout == "" {
 		conf.Layout = "layout"
 	}
-	return &Tempest{
+	return &tempest{
 		temps: make(map[string]*template.Template),
 		conf:  conf,
 	}
@@ -120,7 +120,7 @@ func WithConfig(conf *Config) *Tempest {
 
 // LoadFS loads templates from an embedded filesystem and returns a map of
 // templates to filenames.
-func (tempest *Tempest) LoadFS(files fs.FS) (map[string]*template.Template, error) {
+func (tempest *tempest) LoadFS(files fs.FS) (map[string]*template.Template, error) {
 
 	includesDir := filepath.Clean(tempest.conf.IncludesDir)
 	layoutFile := filepath.Clean(tempest.conf.Layout + tempest.conf.Ext)
@@ -132,7 +132,7 @@ func (tempest *Tempest) LoadFS(files fs.FS) (map[string]*template.Template, erro
 	templates := make(map[string]*template.Template)
 
 	// Walk through the files and load them into the map
-	fs.WalkDir(files, ".", func(path string, d fs.DirEntry, err error) error {
+	err := fs.WalkDir(files, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -145,16 +145,21 @@ func (tempest *Tempest) LoadFS(files fs.FS) (map[string]*template.Template, erro
 		}
 
 		if !d.IsDir() {
-			if filepath.Ext(path) == tempest.conf.Ext && filepath.Base(path) != layoutFile {
-				rawTemps[path] = path
-			} else {
-				layouts = append(layouts, path)
+			if filepath.Ext(path) == tempest.conf.Ext {
+				if filepath.Base(path) != layoutFile {
+					rawTemps[path] = path
+				} else {
+					layouts = append(layouts, path)
+				}
 			}
 		}
 
 		return nil
 	})
 
+	if err != nil {
+		return nil, fmt.Errorf("error walking directory: %w", err)
+	}
 	// sort the includes
 	sort.Slice(includes, func(i, j int) bool {
 		return len(includes[i]) < len(includes[j])
@@ -166,10 +171,18 @@ func (tempest *Tempest) LoadFS(files fs.FS) (map[string]*template.Template, erro
 	})
 
 	for _, t := range rawTemps {
-		temp := template.New(layoutFile)
+
+		// get the layouts
+		lyts := getLayouts(t, layouts)
+		lyts = append(lyts, t)
+
+		// get the name of the template
+		name := filepath.Base(lyts[0])
+
+		temp := template.New(name)
 
 		// get the includes
-		incls := getInclues(t, includes)
+		incls := getIncludes(t, includes)
 		for _, i := range incls {
 			xfiles, err := fs.Glob(files, fmt.Sprintf("%s/*%s", i, tempest.conf.Ext))
 			if err != nil {
@@ -181,11 +194,11 @@ func (tempest *Tempest) LoadFS(files fs.FS) (map[string]*template.Template, erro
 			}
 		}
 
-		// get the layouts
-		lyts := getLayouts(t, layouts)
-		lyts = append(lyts, t)
-
-		temp, _ = temp.ParseFS(files, lyts...)
+		// parse the layout files
+		temp, err = temp.ParseFS(files, lyts...)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing layouts: %w", err)
+		}
 
 		// remove the extension from the template name
 		// views/admin/index.html -> admin/index
@@ -197,7 +210,7 @@ func (tempest *Tempest) LoadFS(files fs.FS) (map[string]*template.Template, erro
 	return templates, nil
 }
 
-func getInclues(path string, includes []string) []string {
+func getIncludes(path string, includes []string) []string {
 	inc := make([]string, 0)
 	for _, i := range includes {
 		// fmt.Printf("i: %s\n", i)

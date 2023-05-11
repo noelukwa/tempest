@@ -95,3 +95,30 @@ func TestLoadWithConfig(t *testing.T) {
 	}
 
 }
+
+func TestLoadWithoutLayout(t *testing.T) {
+	tempest := tempest.New()
+	temps, err := tempest.LoadFS(test.WithoutLayout)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, ok := temps["home"]; !ok {
+		t.Error("expected home template to be loaded")
+	}
+
+	{
+		// Test index template
+		tmpl := temps["home"]
+		// initialise content to be type strings Builder and load content of temp into it, then compare
+		content := strings.Builder{}
+		err := tmpl.Execute(&content, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if content.String() != "main-header home-page main-footer" {
+			t.Errorf("expected: %s got: %s", "main-header home-page main-footer", content.String())
+		}
+	}
+}
