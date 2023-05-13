@@ -171,7 +171,6 @@ func (tempest *tempest) LoadFS(files fs.FS) (map[string]*template.Template, erro
 	})
 
 	for _, t := range rawTemps {
-
 		// get the layouts
 		lyts := getLayouts(t, layouts)
 		lyts = append(lyts, t)
@@ -213,7 +212,6 @@ func (tempest *tempest) LoadFS(files fs.FS) (map[string]*template.Template, erro
 func getIncludes(path string, includes []string) []string {
 	inc := make([]string, 0)
 	for _, i := range includes {
-		// fmt.Printf("i: %s\n", i)
 		if strings.HasPrefix(path, filepath.Dir(i)) || filepath.Dir(i) == "." {
 			inc = append(inc, i)
 		}
@@ -224,7 +222,7 @@ func getIncludes(path string, includes []string) []string {
 func getLayouts(path string, layouts []string) []string {
 	lay := make([]string, 0)
 	for _, l := range layouts {
-		if strings.HasPrefix(path, filepath.Dir(l)) || filepath.Dir(l) == "." {
+		if strings.HasPrefix(path, filepath.ToSlash(filepath.Dir(l))) || filepath.Dir(l) == "." {
 			lay = append(lay, l)
 		}
 	}
