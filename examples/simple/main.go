@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/noelukwa/tempest"
+	"github.com/uchexgod/tempest"
 )
 
 //go:embed views

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/noelukwa/tempest"
-	"github.com/noelukwa/tempest/test"
+	"github.com/uchexgod/tempest"
+	"github.com/uchexgod/tempest/test"
 )
 
 func TestLoadFs(t *testing.T) {

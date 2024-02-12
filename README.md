@@ -1,29 +1,33 @@
-# tempest 
+# tempest
+
 *Made out of neccessity and frustration* 😩
 
 ## Features
+
 - Use go templates in your app without repeating the parsing logic over and over.
 - Use any template supported by go html/template package.
 - Use `go:embed` to embed template files in your binary.
 - Parse templates once.
 
 ## Usage
+
 In order for tempest to parse templates, three conditions must be met.
-1. Templates must be embeded 
+
+1. Templates must be embeded
 2. The name of the template used for layouts should be `layouts.<extention>`, otherwise, it should be stated with custom config.
 3. The name of the folder containing partial templates should be "inludes", otherwise, it should be stated with custom config
 
 *📝 For requirements 2 and 3, see [examples/with-conf](https://github.com/noelukwa/tempest)*
 
+**Requirements**
 
-
-**Requirements** 
 - Fair knowledge of go [html/template](https://pkg.go.dev/html/template) package.
 - Go version >= 1.16
 
-
 ## Example
+
 Lets say you have a folder structure like this
+
 ```
 .
 ├── main.go
@@ -40,6 +44,7 @@ Lets say you have a folder structure like this
 ```
 
 In your main.go file, you can do something like this
+
 ```go
 package main
 
@@ -47,7 +52,7 @@ import (
     "embed"
     "log"
 
-    "github.com/noelukwa/tempest"
+    "github.com/uchexgod/tempest"
 )
 
 var (
@@ -78,6 +83,7 @@ func main() {
 ```
 
 ## Template Directory Parsing
+
 The template files in the `templates` directory above will be grouped as follows
 
 ```
@@ -104,6 +110,7 @@ The template files in the `templates` directory above will be grouped as follows
 ```
 
 ### html/template basics
+
 *When using  nested layouts, the child layout's `define` block name should correspond to the parent layout's `block` name.*
 
 ```html
@@ -112,6 +119,7 @@ The template files in the `templates` directory above will be grouped as follows
     {{ block "content" . }}{{ end }}
 </main>
 ```
+
 ```html
 <!-- templates/admin/layout.html -->
 {{ define "content" }}
@@ -122,4 +130,3 @@ The template files in the `templates` directory above will be grouped as follows
 ```
 
 Further Read: [Go html/template package](https://pkg.go.dev/html/template)
-

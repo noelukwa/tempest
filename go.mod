@@ -1,3 +1,3 @@
-module github.com/noelukwa/tempest
+module github.com/uchexgod/tempest
 
 go 1.18
